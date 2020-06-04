@@ -35,6 +35,7 @@ def lagom(
     num_trials=1,
     ablation_study=None,
     ablator=None,
+    dataloader_kwargs=None,
     optimization_key="metric",
     hb_interval=1,
     es_policy="median",
