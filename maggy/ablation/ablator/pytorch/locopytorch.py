@@ -8,6 +8,7 @@ class LOCOPyTorch(AbstractAblator):
     def __init__(self, ablation_study, final_store):
         super().__init__(ablation_study, final_store)
         self.base_model_generator = self.ablation_study.model.base_model_generator
+        self.base_dataset_generator = self.get_dataset_generator(ablated_feature=None)
 
     def get_number_of_trials(self):
         return (
