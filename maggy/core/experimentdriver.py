@@ -24,6 +24,7 @@ from maggy.searchspace import Searchspace
 
 from maggy.ablation.ablator import AbstractAblator
 from maggy.ablation.ablator.loco import LOCO
+from maggy.ablation.ablator.pytorch.locopytorch import LOCOPyTorch
 from maggy.ablation.ablationstudy import AblationStudy
 
 driver_secret = None
@@ -193,6 +194,13 @@ class ExperimentDriver(object):
                     self.num_trials = self.ablator.get_number_of_trials()
                     if self.num_executors > self.num_trials:
                         self.num_executors = self.num_trials
+
+                elif ablator.lower() == "loco_pytorch":
+                    self.ablator = LOCOPyTorch(ablation_study, self._final_store)
+                    self.num_trials = self.ablator.get_number_of_trials()
+                    if self.num_executors > self.num_trials:
+                        self.num_executors = self.num_trials
+
                 else:
                     raise Exception(
                         "The experiment's ablation study policy should either be a string ('loco') "

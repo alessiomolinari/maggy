@@ -4,7 +4,7 @@ from maggy.trial import Trial
 from .pytorch_ablator import Ablator, PandasDataset
 
 
-class LOCO(AbstractAblator):
+class LOCOPyTorch(AbstractAblator):
     def __init__(self, ablation_study, final_store):
         super().__init__(ablation_study, final_store)
         self.dataloader_kwargs = ablation_study.dataloader_kwargs
