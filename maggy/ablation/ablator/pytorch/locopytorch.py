@@ -7,13 +7,6 @@ from .pytorch_ablator import Ablator, PandasDataset
 class LOCOPyTorch(AbstractAblator):
     def __init__(self, ablation_study, final_store):
         super().__init__(ablation_study, final_store)
-        self.dataloader_kwargs = ablation_study.dataloader_kwargs
-
-        if self.dataloader_kwargs is None:
-            raise ValueError(
-                "Please define your dataloader_kwargs in the ablation study"
-            )
-
         self.base_model_generator = self.ablation_study.model.base_model_generator
 
     def get_number_of_trials(self):
@@ -41,9 +34,6 @@ class LOCOPyTorch(AbstractAblator):
 
             if ablated_feature is not None:
                 dataset.ablate_feature(ablated_feature)
-
-            # TODO instantiate dataloader in trining_fn
-            # dataloader = DataLoader(dataset, **self.dataloader_kwargs)
 
             return dataset
 
