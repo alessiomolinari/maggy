@@ -24,9 +24,8 @@ class AbstractAblator(ABC):
         Create and return a dataset generator function based on the ablation policy to be used in a trial.
         The returned function will be executed on the executor per each trial.
 
-        :param ablated_feature: the name of the feature to be excluded from the training dataset.
+        :param ablated_feature: the name of the feature to be excluded from the training dataset, otherwise None.
             Must match a feature name in the corresponding feature group in the feature store.
-        :type ablated_feature: str
         :param dataset_type: type of the dataset. For now, we only support 'tfrecord'.
         :return: A function that generates a TFRecordDataset
         :rtype: function

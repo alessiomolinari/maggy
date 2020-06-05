@@ -7,16 +7,13 @@ from torch.utils.data import DataLoader, Dataset
 
 
 class Ablator:
-    def __init__(self, model, dataset, dataloader_kwargs, training_fn):
+    def __init__(self, model, dataset):
         # TODO maybe you can have a check that model must be a nn.Sequential, otherwise you make it sequential
         if type(model) != nn.Sequential:
             raise ValueError("Only nn.Sequential is supported as model type")
         self.model = model
         self.dataset = dataset
-        self.dataloader_kwargs = dataloader_kwargs
-        self.training_fn = training_fn
 
-        self.trials = []
         self.state_dictionary = model.state_dict()
 
     def ablate_layers(self, idx_list, input_shape, infer_activation=False):
@@ -42,13 +39,14 @@ class Ablator:
             idx_list = list(set(idx_list))
 
         ablated_modules = self.remove_modules(new_modules, idx_list)
-        correct_modules = self._match_model_features(ablated_modules, input_shape)
+        correct_modules = self.match_model_features(ablated_modules, input_shape)
         ablated_model = nn.Sequential(*correct_modules)
 
         return ablated_model
 
     @staticmethod
-    def _match_model_features(model_modules, input_shape):
+    def match_model_features(model, input_shape):
+        model_modules = Ablator.get_module_list(model)
         # TODO you have to do a lot of testing with different pytorch layers
         tensor_shape = (1,) + input_shape
         last_valid_out_features = tensor_shape[1]
@@ -95,18 +93,6 @@ class Ablator:
                 model_modules[i] = layer_type(**new_args)
         return model_modules
 
-    def new_trial(
-        self,
-        input_shape,
-        ablated_layers=None,
-        ablated_features=None,
-        infer_activation=False,
-    ):
-        # TODO you don't really need the whole input shape but just the initial features actually
-        self.trials.append(
-            Trial(input_shape, ablated_layers, ablated_features, infer_activation)
-        )
-
     def execute_trials(self):
         for i, trial in enumerate(self.trials):
             print("Starting trial", i)
@@ -124,7 +110,7 @@ class Ablator:
                 self.dataset.ablate_feature(trial.ablated_features)
 
             # 3) Match features in model
-            self._match_model_features(ablated_model, trial.input_shape)
+            self.match_model_features(ablated_model, trial.input_shape)
 
             # 4) Train
             dataloader = DataLoader(self.dataset, **self.dataloader_kwargs)
@@ -198,7 +184,6 @@ class PandasDataset(Dataset):
             )
 
         label_idx = df.columns.values.index(label)
-        # TODO maybe check if this actually works
         self.data = np.delete(df.values, obj=label_idx, axis=1)
         self.labels = df.values[:, label_idx]
         self.columns = df.columns.values

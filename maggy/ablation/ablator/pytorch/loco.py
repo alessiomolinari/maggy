@@ -2,24 +2,19 @@ from maggy.ablation.ablator import AbstractAblator
 from hops import featurestore
 from maggy.trial import Trial
 from .pytorch_ablator import Ablator, PandasDataset
-from torch.utils.data import DataLoader
 
 
 class LOCO(AbstractAblator):
     def __init__(self, ablation_study, final_store):
         super().__init__(ablation_study, final_store)
         self.dataloader_kwargs = ablation_study.dataloader_kwargs
+
         if self.dataloader_kwargs is None:
             raise ValueError(
                 "Please define your dataloader_kwargs in the ablation study"
             )
-        self.base_dataset_generator = self.get_dataset_generator(ablated_feature=None)
+
         self.base_model_generator = self.ablation_study.model.base_model_generator
-        self.ablator = Ablator(
-            self.base_dataset_generator(),
-            self.base_dataset_generator(),
-            self.dataloader_kwargs,
-        )
 
     def get_number_of_trials(self):
         return (
@@ -47,31 +42,32 @@ class LOCO(AbstractAblator):
             if ablated_feature is not None:
                 dataset.ablate_feature(ablated_feature)
 
-            dataloader = DataLoader(dataset, **self.dataloader_kwargs)
+            # TODO instantiate dataloader in trining_fn
+            # dataloader = DataLoader(dataset, **self.dataloader_kwargs)
 
-            return dataloader
+            return dataset
 
         return create_dataset
 
     def get_model_generator(self, layer_identifier=None):
-        # TODO is it really necessary?
         if layer_identifier is None:
             return self.base_model_generator
 
-        # TODO training _fn is missing, either remove from arguments or add
-        # ablator = Ablator(
-        #     self.base_model_generator(),
-        #     self.base_dataset_generator,
-        #     self.dataloader_kwargs,
-        # )
+        dataset_fn = self.get_dataset_generator(ablated_feature=None)
 
-        # TODO how to pass input_shape?
+        ablator = Ablator(self.base_model_generator(), dataset=dataset_fn())
+
         def model_generator():
-            pass
-            # ablated_model = ablator.ablate_layers(
-            #     layer_identifier, input_shape, infer_activation=False
-            # )
-            # return ablated_model
+            # TODO input_shape must be changed if the dataset is not tabular
+            num_columns = ablator.dataset.data.shape[1]
+            input_shape = (num_columns,)
+
+            ablated_model = ablator.ablate_layers(
+                layer_identifier, input_shape, infer_activation=False
+            )
+
+            model = Ablator.match_model_features(ablated_model, input_shape)
+            return model
 
         return model_generator
 
