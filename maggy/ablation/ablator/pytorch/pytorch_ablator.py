@@ -23,9 +23,11 @@ class Ablator:
             #  same model over and over again.
         if type(idx_list) == int:
             idx_list = [idx_list]
+        if type(idx_list) == set:
+            idx_list = list(idx_list)
         elif type(idx_list) != list:
             raise TypeError(
-                "idx_list should be an integer or a list of integers",
+                "idx_list should be an integer, a list or a set of integers",
                 "but instead {0} (of type {1}) was passed".format(
                     idx_list, type(idx_list).__name__
                 ),
