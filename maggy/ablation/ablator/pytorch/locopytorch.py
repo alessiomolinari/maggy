@@ -2,6 +2,7 @@ from maggy.ablation.ablator import AbstractAblator
 from hops import featurestore
 from maggy.trial import Trial
 from .pytorch_ablator import Ablator, PandasDataset
+import pandas as pd
 
 
 class LOCOPyTorch(AbstractAblator):
@@ -25,12 +26,12 @@ class LOCOPyTorch(AbstractAblator):
         label_name = self.ablation_study.label_name
 
         def create_dataset():
-            pandas_df = featurestore.get_training_dataset(
+            csv_df = featurestore.get_training_dataset(
                 training_dataset_name,
                 training_dataset_version=training_dataset_version,
-                dataframe_type="pandas",
+                dataframe_type="csv",
             )
-
+            pandas_df = pd.read_csv(csv_df)
             dataset = PandasDataset(pandas_df, label_name)
 
             if ablated_feature is not None:
