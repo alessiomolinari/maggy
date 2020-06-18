@@ -247,12 +247,12 @@ class Layers(object):
                 self._include_single_layer(arg)
 
     def _include_single_layer(self, layer):
-        if type(layer) is str:
+        if type(layer) is str or type(layer) is int:
             self.included_layers.add(layer)
             # print("included {}".format(layer))  # this still prints even if was duplicate
         else:
             raise ValueError(
-                "layers.include() only accepts strings or lists of strings, "
+                "layers.exclude() only accepts strings, ints or lists of these "
                 "but it received {0} which is of type '{1}'.".format(
                     str(layer), type(layer).__name__
                 )
