@@ -130,6 +130,7 @@ class Ablator:
 
     @staticmethod
     def get_module_list(model):
+        print("debug:\n", model)
         modules = []
         for mod in model.modules():
             # TODO this is just a quick patch but you should find a better solution
