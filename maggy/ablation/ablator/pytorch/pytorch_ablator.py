@@ -98,7 +98,8 @@ class Ablator:
                 # This new initialization is necessary because even if you change the shape of the layer,
                 #  without initialization you don't have the correct number of weights
                 model_modules[i] = layer_type(**new_args)
-        return model_modules
+                final_model = nn.Sequential(*model_modules)
+        return final_model
 
     def execute_trials(self):
         for i, trial in enumerate(self.trials):
