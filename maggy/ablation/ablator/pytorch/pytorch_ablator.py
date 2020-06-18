@@ -185,7 +185,7 @@ class PandasDataset(Dataset):
             )
 
         label_idx = self.columns.index(label)
-        self.columns.pop(label)
+        self.columns.pop(label_idx)
         self.data = np.delete(df.values, obj=label_idx, axis=1)
         self.labels = df.values[:, label_idx]
 
