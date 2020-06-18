@@ -267,12 +267,12 @@ class Layers(object):
                 self._exclude_single_layer(arg)
 
     def _exclude_single_layer(self, layer):
-        if type(layer) is str:
+        if type(layer) is str or type(layer) is int:
             if layer in self.included_layers:
                 self.included_layers.remove(layer)
         else:
             raise ValueError(
-                "layers.exclude() only accepts strings or lists of strings, "
+                "layers.exclude() only accepts strings, ints or lists of these "
                 "but it received {0} (of type '{1}').".format(
                     str(layer), type(layer).__name__
                 )

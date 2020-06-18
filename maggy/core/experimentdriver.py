@@ -203,7 +203,7 @@ class ExperimentDriver(object):
 
                 else:
                     raise Exception(
-                        "The experiment's ablation study policy should either be a string ('loco') "
+                        "The experiment's ablation study policy should either be a string ('loco', 'loco_pytorch') "
                         "or a custom policy that is an instance of maggy.ablation.ablation.AbstractAblator, "
                         "but it is {0} (of type '{1}').".format(
                             str(ablator), type(ablator).__name__
