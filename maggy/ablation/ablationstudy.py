@@ -252,7 +252,7 @@ class Layers(object):
             # print("included {}".format(layer))  # this still prints even if was duplicate
         else:
             raise ValueError(
-                "layers.exclude() only accepts strings, ints or lists of these "
+                "layers.include() only accepts strings, ints or lists of these "
                 "but it received {0} which is of type '{1}'.".format(
                     str(layer), type(layer).__name__
                 )

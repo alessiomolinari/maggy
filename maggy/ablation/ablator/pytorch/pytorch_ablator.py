@@ -177,17 +177,16 @@ class PandasDataset(Dataset):
     def __init__(self, df, label):
         super(Dataset).__init__()
         self.label = label
-
-        if self.label not in self.columns:
-            raise ValueError(
-                "The specified label can't be found among the dataset columns"
-            )
-
         label_idx = df.columns.values.index(label)
         self.data = np.delete(df.values, obj=label_idx, axis=1)
         self.labels = df.values[:, label_idx]
         self.columns = df.columns.values
         self.columns.pop(label)
+
+        if self.label not in self.columns:
+            raise ValueError(
+                "The specified label can't be found among the dataset columns"
+            )
 
     def __getitem__(self, item):
         return self.labels[item], self.data[item]
