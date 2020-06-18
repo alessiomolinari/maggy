@@ -108,6 +108,7 @@ class AblationStudy(object):
         self.hops_training_dataset_version = training_dataset_version
         self.label_name = label_name
         self.custom_dataset_generator = kwargs.get("dataset_generator", False)
+        # TODO this is probably unnecessary
         self.dataloader_kwargs = kwargs.get("dataloader_kwargs", None)
 
     def to_dict(self):

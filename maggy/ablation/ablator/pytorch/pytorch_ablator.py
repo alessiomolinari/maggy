@@ -177,7 +177,7 @@ class PandasDataset(Dataset):
     def __init__(self, df, label):
         super(Dataset).__init__()
         self.label = label
-        label_idx = df.columns.values.index(label)
+        label_idx = np.where(df.columns.values == label)
         self.data = np.delete(df.values, obj=label_idx, axis=1)
         self.labels = df.values[:, label_idx]
         self.columns = df.columns.values
