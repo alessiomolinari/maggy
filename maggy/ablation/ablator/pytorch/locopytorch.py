@@ -169,7 +169,7 @@ class LOCOPyTorch(AbstractAblator):
             trial_dict["model_function"] = self.get_model_generator(
                 layer_identifier=layer_identifier
             )
-            if type(layer_identifier) is str:
+            if type(layer_identifier) is str or type(layer_identifier) is int:
                 trial_dict["ablated_layer"] = layer_identifier
             elif type(layer_identifier) is set:
                 if len(layer_identifier) > 1:
