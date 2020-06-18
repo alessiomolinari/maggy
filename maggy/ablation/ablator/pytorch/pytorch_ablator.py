@@ -24,7 +24,12 @@ class Ablator:
         if type(idx_list) == int:
             idx_list = [idx_list]
         elif type(idx_list) != list:
-            raise TypeError("idx_to_ablate should be an integer or a list of integers")
+            raise TypeError(
+                "idx_list should be an integer or a list of integers",
+                "but instead {0} (of type {1}) was passed".format(
+                    idx_list, type(idx_list).__name__
+                ),
+            )
 
         new_modules = self.get_module_list(self.model)
 
