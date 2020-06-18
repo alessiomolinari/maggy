@@ -52,8 +52,7 @@ class Ablator:
         return ablated_model
 
     @staticmethod
-    def match_model_features(model, input_shape):
-        model_modules = Ablator.get_module_list(model)
+    def match_model_features(model_modules, input_shape):
         # TODO you have to do a lot of testing with different pytorch layers
         tensor_shape = (1,) + input_shape
         last_valid_out_features = tensor_shape[1]
@@ -98,8 +97,7 @@ class Ablator:
                 # This new initialization is necessary because even if you change the shape of the layer,
                 #  without initialization you don't have the correct number of weights
                 model_modules[i] = layer_type(**new_args)
-                final_model = nn.Sequential(*model_modules)
-        return final_model
+        return model_modules
 
     def execute_trials(self):
         for i, trial in enumerate(self.trials):
@@ -130,7 +128,6 @@ class Ablator:
 
     @staticmethod
     def get_module_list(model):
-        print("debug:\n", model)
         modules = []
         for mod in model.modules():
             # TODO this is just a quick patch but you should find a better solution

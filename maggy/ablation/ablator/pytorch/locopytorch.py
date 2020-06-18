@@ -57,8 +57,8 @@ class LOCOPyTorch(AbstractAblator):
                 layer_identifier, input_shape, infer_activation=False
             )
 
-            model = Ablator.match_model_features(ablated_model, input_shape)
-            return model
+            # model = Ablator.match_model_features(ablated_model, input_shape)
+            return ablated_model
 
         return model_generator
 
