@@ -19,7 +19,7 @@ class LOCOPyTorch(AbstractAblator):
             + 1
         )
 
-    def get_dataset_generator(self, ablated_feature=None, dataset_type="numpy"):
+    def get_dataset_generator(self, ablated_feature=None, dataset_type="pandas"):
         training_dataset_name = self.ablation_study.hops_training_dataset_name
         training_dataset_version = self.ablation_study.hops_training_dataset_version
         label_name = self.ablation_study.label_name
@@ -152,7 +152,7 @@ class LOCOPyTorch(AbstractAblator):
             trial_dict["ablated_feature"] = "None"
         else:
             trial_dict["dataset_function"] = self.get_dataset_generator(
-                ablated_feature, dataset_type="tfrecord"
+                ablated_feature, dataset_type="pandas"
             )
             trial_dict["ablated_feature"] = ablated_feature
 
@@ -186,5 +186,3 @@ class LOCOPyTorch(AbstractAblator):
             trial_dict["ablated_layer"] = "Custom model: " + custom_model_generator[1]
 
         return trial_dict
-
-    # TODO method create_trial.dict is not in the abstract ablator, is it necessary?

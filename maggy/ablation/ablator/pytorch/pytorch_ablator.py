@@ -182,6 +182,10 @@ class MaggyDataset(Dataset):
 class PandasDataset(Dataset):
     def __init__(self, df, label):
         super(Dataset).__init__()
+        from pyspark.sql.dataframe import DataFrame
+
+        if isinstance(df, DataFrame):
+            df = df.toPandas()
         self.label = label
         self.columns = df.columns.values.tolist()
 
