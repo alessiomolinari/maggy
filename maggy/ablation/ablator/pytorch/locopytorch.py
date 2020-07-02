@@ -3,6 +3,7 @@ from hops import featurestore
 from maggy.trial import Trial
 from .pytorch_ablator import Ablator, PandasDataset
 from hops import pandas_helper as ph
+import pandas as pd
 import hdfs
 import glob
 
@@ -45,7 +46,7 @@ class LOCOPyTorch(AbstractAblator):
                     )
                     li.append(df)
 
-                pandas_df = ph.concat(li, axis=0, ignore_index=True)
+                pandas_df = pd.concat(li, axis=0, ignore_index=True)
                 dataset = PandasDataset(pandas_df, label_name)
             else:
                 raise ValueError(
