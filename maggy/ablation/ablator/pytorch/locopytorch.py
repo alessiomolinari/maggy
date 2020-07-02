@@ -2,6 +2,9 @@ from maggy.ablation.ablator import AbstractAblator
 from hops import featurestore
 from maggy.trial import Trial
 from .pytorch_ablator import Ablator, PandasDataset
+from hops import pandas_helper as ph
+import hdfs
+import glob
 
 
 class LOCOPyTorch(AbstractAblator):
@@ -25,13 +28,29 @@ class LOCOPyTorch(AbstractAblator):
         label_name = self.ablation_study.label_name
 
         def create_dataset():
-            pandas_df = featurestore.get_training_dataset(
-                training_dataset_name,
-                training_dataset_version=training_dataset_version,
-                dataframe_type="pandas",
-            )
+            # TODO what if the format in the featurestore is not csv?
+            if dataset_type == "pandas":
+                file_path = featurestore.get_training_dataset_path(
+                    training_dataset_name,
+                    training_dataset_version=training_dataset_version,
+                )
+                all_files = glob.glob(file_path + "/*.csv")
+                li = []
 
-            dataset = PandasDataset(pandas_df, label_name)
+                for filename in all_files:
+                    df = ph.read_csv(
+                        hdfs.get_plain_path(
+                            [path for path in filename if ".csv" in path][0]
+                        )
+                    )
+                    li.append(df)
+
+                pandas_df = ph.concat(li, axis=0, ignore_index=True)
+                dataset = PandasDataset(pandas_df, label_name)
+            else:
+                raise ValueError(
+                    "Invalid dataset type: only pandas is available for PyTorch ablation"
+                )
 
             if ablated_feature is not None:
                 dataset.ablate_feature(ablated_feature)
