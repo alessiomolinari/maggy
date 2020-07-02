@@ -4,7 +4,7 @@ from maggy.trial import Trial
 from .pytorch_ablator import Ablator, PandasDataset
 from hops import pandas_helper as ph
 import pandas as pd
-import hdfs
+from hops import hdfs
 
 
 class LOCOPyTorch(AbstractAblator):
