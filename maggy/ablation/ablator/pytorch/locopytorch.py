@@ -5,7 +5,6 @@ from .pytorch_ablator import Ablator, PandasDataset
 from hops import pandas_helper as ph
 import pandas as pd
 import hdfs
-import glob
 
 
 class LOCOPyTorch(AbstractAblator):
@@ -35,15 +34,11 @@ class LOCOPyTorch(AbstractAblator):
                     training_dataset_name,
                     training_dataset_version=training_dataset_version,
                 )
-                all_files = glob.glob(file_path + "/*.csv")
+                all_files = [path for path in hdfs.ls(file_path) if ".csv" in path]
                 li = []
 
                 for filename in all_files:
-                    df = ph.read_csv(
-                        hdfs.get_plain_path(
-                            [path for path in filename if ".csv" in path][0]
-                        )
-                    )
+                    df = ph.read_csv(hdfs.get_plain_path(filename))
                     li.append(df)
 
                 pandas_df = pd.concat(li, axis=0, ignore_index=True)
