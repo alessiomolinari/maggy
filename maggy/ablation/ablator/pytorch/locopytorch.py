@@ -1,17 +1,17 @@
 from maggy.ablation.ablator import AbstractAblator
-from hops import featurestore
 from maggy.trial import Trial
-from .pytorch_ablator import Ablator, PandasDataset
+from hops import featurestore
 from hops import pandas_helper as ph
-import pandas as pd
 from hops import hdfs
+import pandas as pd
+from .pytorch_ablator import Ablator, PandasDataset
 
 
 class LOCOPyTorch(AbstractAblator):
     def __init__(self, ablation_study, final_store):
         super().__init__(ablation_study, final_store)
         self.base_model_generator = self.ablation_study.model.base_model_generator
-        self.base_dataset_generator = self.get_dataset_generator(ablated_feature=None)
+        self.base_dataset_function = self.get_dataset_generator(ablated_feature=None)
 
     def get_number_of_trials(self):
         return (
@@ -59,7 +59,7 @@ class LOCOPyTorch(AbstractAblator):
         if layer_identifier is None:
             return self.base_model_generator
 
-        dataset_fn = self.get_dataset_generator(ablated_feature=None)
+        dataset_fn = self.base_dataset_function
 
         ablator = Ablator(self.base_model_generator(), dataset=dataset_fn())
 
@@ -72,7 +72,6 @@ class LOCOPyTorch(AbstractAblator):
                 layer_identifier, input_shape, infer_activation=False
             )
 
-            # model = Ablator.match_model_features(ablated_model, input_shape)
             return ablated_model
 
         return model_generator
@@ -163,13 +162,16 @@ class LOCOPyTorch(AbstractAblator):
 
         # 1 - determine the dataset generation logic
         if ablated_feature is None:
-            trial_dict["dataset_function"] = self.base_dataset_generator
+            trial_dict["dataset_function"] = self.base_dataset_function
             trial_dict["ablated_feature"] = "None"
         else:
             trial_dict["dataset_function"] = self.get_dataset_generator(
                 ablated_feature, dataset_type="pandas"
             )
             trial_dict["ablated_feature"] = ablated_feature
+            trial_dict[
+                "model_function"
+            ] = self.ablation_study.model.base_model_generator
 
         # 2 - determine the model generation logic
         # 2.1 - no model ablation
