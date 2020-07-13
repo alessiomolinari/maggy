@@ -1,7 +1,6 @@
 import inspect
 import torch
 import torch.nn as nn
-import copy
 import numpy as np
 from torch.utils.data import DataLoader, Dataset
 
@@ -17,10 +16,12 @@ class Ablator:
         self.state_dictionary = model.state_dict()
 
     def ablate_layers(self, idx_list, input_shape, infer_activation=False):
-        if idx_list is None:
-            return copy.deepcopy(self.model)
-            # Why a copy? Because if you perform a multiple feature ablation without layer ablation you train on the
-            #  same model over and over again.
+        # The first if case is only for when no layer is ablated but you still need to match feature coherence
+        if idx_list == "feature_ablation":
+            new_modules = self.get_module_list(self.model)
+            correct_modules = self.match_model_features(new_modules, input_shape)
+            ablated_model = nn.Sequential(*correct_modules)
+            return ablated_model
         if type(idx_list) == int:
             idx_list = [idx_list]
         if type(idx_list) == set:

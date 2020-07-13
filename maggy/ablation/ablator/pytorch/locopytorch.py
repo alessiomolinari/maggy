@@ -169,9 +169,9 @@ class LOCOPyTorch(AbstractAblator):
                 ablated_feature, dataset_type="pandas"
             )
             trial_dict["ablated_feature"] = ablated_feature
-            trial_dict[
-                "model_function"
-            ] = self.ablation_study.model.base_model_generator
+            trial_dict["model_function"] = self.get_model_generator(
+                layer_identifier="feature_ablation"
+            )
 
         # 2 - determine the model generation logic
         # 2.1 - no model ablation
