@@ -95,9 +95,7 @@ class LOCOPyTorch(AbstractAblator):
         for feature in self.ablation_study.features.included_features:
             self.trial_buffer.append(
                 Trial(
-                    self.create_trial_dict(
-                        ablated_feature=feature, layer_identifier="feature_ablation"
-                    ),
+                    self.create_trial_dict(ablated_feature=feature),
                     trial_type="ablation",
                 )
             )
@@ -171,19 +169,20 @@ class LOCOPyTorch(AbstractAblator):
                 ablated_feature, dataset_type="pandas"
             )
             trial_dict["ablated_feature"] = ablated_feature
+
+        # 2 - determine the model generation logic
+        # 2.1 - feature ablation
+        if ablated_feature is not None:
             trial_dict["model_function"] = self.get_model_generator(
                 layer_identifier="feature_ablation", ablated_feature=ablated_feature
             )
-
-        # 2 - determine the model generation logic
-        # 2.1 - no model ablation
-
-        if layer_identifier is None and custom_model_generator is None:
+        # 2.2 - no model ablation
+        elif layer_identifier is None and custom_model_generator is None:
             trial_dict[
                 "model_function"
             ] = self.ablation_study.model.base_model_generator
             trial_dict["ablated_layer"] = "None"
-        # 2.2 - layer ablation based on base model generator
+        # 2.3 - layer ablation based on base model generator
         elif layer_identifier is not None and custom_model_generator is None:
             trial_dict["model_function"] = self.get_model_generator(
                 layer_identifier=layer_identifier
@@ -197,7 +196,7 @@ class LOCOPyTorch(AbstractAblator):
                     trial_dict["ablated_layer"] = "Layers prefixed " + str(
                         list(layer_identifier)[0]
                     )
-        # 2.3 - model ablation based on a custom model generator
+        # 2.4 - model ablation based on a custom model generator
         elif layer_identifier is None and custom_model_generator is not None:
             trial_dict["model_function"] = self.get_model_generator(
                 custom_model_generator
