@@ -176,6 +176,7 @@ class LOCOPyTorch(AbstractAblator):
             trial_dict["model_function"] = self.get_model_generator(
                 layer_identifier="feature_ablation", ablated_feature=ablated_feature
             )
+            trial_dict["ablated_layer"] = "None"
         # 2.2 - no model ablation
         elif layer_identifier is None and custom_model_generator is None:
             trial_dict[
