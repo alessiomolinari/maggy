@@ -95,7 +95,9 @@ class LOCOPyTorch(AbstractAblator):
         for feature in self.ablation_study.features.included_features:
             self.trial_buffer.append(
                 Trial(
-                    self.create_trial_dict(ablated_feature=feature),
+                    self.create_trial_dict(
+                        ablated_feature=feature, layer_identifier="feature_ablation"
+                    ),
                     trial_type="ablation",
                 )
             )
